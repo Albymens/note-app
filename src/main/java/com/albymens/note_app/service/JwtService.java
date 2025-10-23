@@ -20,14 +20,14 @@ public class JwtService {
     @Value("${security.jwt.token.expire-length}")
     private Long expiration;
 
-    public String generateToken(String username, String userId){
+    public String generateToken(String username, Long userId){
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
 
-        return createToke(claims, username);
+        return createToken(claims, username);
     }
 
-    private String createToke(Map<String, Object> claims, String username) {
+    private String createToken(Map<String, Object> claims, String username) {
         return Jwts.builder()
                 .subject(username)
                 .claims(claims)

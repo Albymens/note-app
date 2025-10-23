@@ -23,7 +23,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String AUTH_HEADER = "Authentication";
+    private static final String AUTH_HEADER = "Authorization";
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Autowired

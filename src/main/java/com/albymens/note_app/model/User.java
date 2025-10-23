@@ -5,20 +5,23 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
         @UniqueConstraint(columnNames = "username")
 })
+
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false, nullable = false)
+    private Long id;
 
     @Column(nullable = false, unique = true)
     @Email
@@ -31,34 +34,39 @@ public class User {
     @NotBlank(message = "Username is required")
     private String username;
 
-    @Column(nullable = false)
+
     @NotBlank
-    @Size(min = 6, max = 20, message = "Password must be more than 6 letters")
+    @Size(min = 6, message = "Password must be at least 6 characters")
+    @Column(nullable = false)
     private String password;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(nullable = false)
-    @LastModifiedDate
-    private Instant updatedAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Note> notes = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String id, String email, String username, String password) {
+    public User(Long id, String email, String username, String password) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.password = password;
     }
 
-    public String getId() {
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = Instant.now();
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -86,19 +94,19 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public @Size(max = 20) @NotBlank(message = "Username is required") String getUsername() {
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername(@Size(max = 20) @NotBlank(message = "Username is required") String username) {
+    public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
     }
 }

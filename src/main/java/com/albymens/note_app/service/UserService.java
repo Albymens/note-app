@@ -1,6 +1,6 @@
 package com.albymens.note_app.service;
 
-import com.albymens.note_app.dto.AuthRequest;
+import com.albymens.note_app.dto.SignupRequest;
 import com.albymens.note_app.exception.DuplicateResourceException;
 import com.albymens.note_app.exception.ResourceNotFoundException;
 import com.albymens.note_app.model.User;
@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -36,7 +38,7 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    public User registerUser(AuthRequest userRequest) {
+    public User registerUser(SignupRequest userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new DuplicateResourceException("Email already registered");
         }
@@ -47,8 +49,8 @@ public class UserService implements UserDetailsService {
 
         User user = new User();
         user.setEmail(userRequest.getEmail());
-        user.setUsername(user.getUsername());
-        user.setPassword(passwordEncoder.encode(user.getUsername()));
+        user.setUsername(userRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         return userRepository.save(user);
     }
 
@@ -57,6 +59,10 @@ public class UserService implements UserDetailsService {
             logger.error("User not found with username or email: {}", usernameOrEmail);
             return new  ResourceNotFoundException( "User not found with username or email: " + usernameOrEmail);
         });
+    }
+
+    Optional<User> findByUsername(String usernameOrEmail){
+        return userRepository.findByUsernameOrEmail(usernameOrEmail);
     }
 
     public boolean validatePassword(String plainTextPassword, String encodedPassword){

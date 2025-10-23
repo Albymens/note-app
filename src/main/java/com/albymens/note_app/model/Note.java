@@ -5,27 +5,29 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "notes")
+@EntityListeners(AuditingEntityListener.class)
 public class Note {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank(message = "Title is required")
-    @Size(min = 6, max = 50)
+    @Size(min = 3, max = 50)
     @Column(nullable = false)
     private String title;
 
-    @Size(min = 6)
+    @Size(min = 3)
     private String content;
 
-    @Column(columnDefinition = "JSON")
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = TagConverter.class)
     private List<String> tags;
 
@@ -42,11 +44,11 @@ public class Note {
 
     private Instant deletedAt;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -117,12 +119,6 @@ public class Note {
         this.deletedAt = deletedAt;
     }
 
-    private void normalizeTags() {
-        if (this.tags != null) {
-            this.tags = new TagConverter().normalizeTags(this.tags);
-        }
-    }
-
     public List<String> getTags() {
         return tags;
     }
@@ -131,17 +127,4 @@ public class Note {
         this.tags = tags;
     }
 
-    public void addTag(String tag) {
-        if (tag == null || tag.isBlank()) return;
-        if (this.tags == null) this.tags = new ArrayList<>();
-        String normalized = tag.trim().toLowerCase();
-        if (!this.tags.contains(normalized)) {
-            this.tags.add(normalized);
-        }
-    }
-
-    public boolean hasTag(String tag) {
-        if (this.tags == null || tag == null) return false;
-        return this.tags.contains(tag.trim().toLowerCase());
-    }
 }

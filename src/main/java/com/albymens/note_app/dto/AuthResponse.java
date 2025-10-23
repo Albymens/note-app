@@ -3,12 +3,12 @@ package com.albymens.note_app.dto;
 public class AuthResponse {
     private String token;
     private String type = "Bearer";
-    private String userId;
+    private Long userId;
     private String username;
     private String email;
     private String message;
 
-    public AuthResponse(String token, String userId, String username, String email) {
+    public AuthResponse(String token, Long userId, String username, String email) {
         this.token = token;
         this.userId = userId;
         this.username = username;
@@ -35,11 +35,11 @@ public class AuthResponse {
         this.type = type;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

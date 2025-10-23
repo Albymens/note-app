@@ -54,8 +54,8 @@ public class TagConverter implements AttributeConverter<List<String>, String> {
         if (tags == null) return Collections.emptyList();
 
         return tags.stream()
-                .map(TagConverter::normalizeTag)
                 .filter(tag -> tag != null && !tag.isBlank())
+                .map(TagConverter::normalizeTag)
                 .distinct()
                 .collect(Collectors.toList());
     }

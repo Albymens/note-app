@@ -1,7 +1,9 @@
 package com.albymens.note_app.controller;
 
-import com.albymens.note_app.dto.AuthRequest;
+import com.albymens.note_app.dto.ApiResult;
 import com.albymens.note_app.dto.AuthResponse;
+import com.albymens.note_app.dto.LoginRequest;
+import com.albymens.note_app.dto.SignupRequest;
 import com.albymens.note_app.model.User;
 import com.albymens.note_app.service.JwtService;
 import com.albymens.note_app.service.UserService;
@@ -31,7 +33,7 @@ public class AuthController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signup(@Valid  @RequestBody AuthRequest userRequest){
+    public ResponseEntity<AuthResponse> signup(@Valid  @RequestBody SignupRequest userRequest){
         try {
             logger.info("Signup attempt for username: {}", userRequest.getUsername());
             User user = userService.registerUser(userRequest);
@@ -53,7 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid  @RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid  @RequestBody LoginRequest request) {
         try {
             logger.info("Login attempt for: {}", request.getUsernameOrEmail());
             Authentication authentication = authenticationManager.authenticate(
@@ -84,7 +86,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<AuthResponse> getCurrentUser() {
+    public ResponseEntity<ApiResult> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() ||
@@ -96,8 +98,7 @@ public class AuthController {
         User user = userService.findByUsernameOrEmail(username);
 
         if (user != null) {
-            AuthResponse response = new AuthResponse(null, user.getId(), user.getUsername(), user.getEmail());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new ApiResult(true, "User details retrieve successfully", user));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
