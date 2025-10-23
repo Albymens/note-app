@@ -3,6 +3,8 @@ package com.albymens.note_app.model;
 import com.albymens.note_app.utils.TagConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -16,15 +18,28 @@ public class Note {
     private String id;
 
     @NotBlank(message = "Title is required")
+    @Size(min = 6, max = 50)
+    @Column(nullable = false)
     private String title;
+
+    @Size(min = 6)
     private String content;
 
     @Column(columnDefinition = "JSON")
     @Convert(converter = TagConverter.class)
-
     private List<String> tags;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @LastModifiedDate
+    @Column(nullable = false)
     private Instant updatedAt;
+
     private Instant deletedAt;
 
     public String getId() {
@@ -68,6 +83,14 @@ public class Note {
 
     public void restore() {
         this.deletedAt = null;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Instant getCreatedAt() {
@@ -116,7 +139,6 @@ public class Note {
             this.tags.add(normalized);
         }
     }
-
 
     public boolean hasTag(String tag) {
         if (this.tags == null || tag == null) return false;

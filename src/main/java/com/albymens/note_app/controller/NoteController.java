@@ -40,7 +40,7 @@ public class NoteController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResult> deleteNote(@PathVariable String id){
         noteService.deleteNote(id);
-        return ResponseEntity.ok(new ApiResult(
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResult(
                 true, "Note deleted successfully", null
         ));
     }
