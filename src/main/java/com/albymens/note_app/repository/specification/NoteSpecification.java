@@ -1,6 +1,7 @@
 package com.albymens.note_app.repository.specification;
 
 import com.albymens.note_app.model.Note;
+import com.albymens.note_app.model.User;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -8,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoteSpecification {
-    public static Specification<Note> belogToUser(Long userId){
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), userId);
+    public static Specification<Note> belogToUser(User user){
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), user);
     }
 
     public static Specification<Note> isNotDeleted(){
-        return (root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("DeletedAt"));
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("deletedAt"));
     }
 
     public static Specification<Note>  containSearchTerm(String searchTerm){

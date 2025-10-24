@@ -1,15 +1,26 @@
 package com.albymens.note_app.controller;
 
 import com.albymens.note_app.dto.ApiResult;
+import com.albymens.note_app.dto.NoteDto;
+import com.albymens.note_app.dto.PageResponse;
 import com.albymens.note_app.model.Note;
+import com.albymens.note_app.model.User;
 import com.albymens.note_app.service.NoteService;
+import com.albymens.note_app.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/notes")
@@ -17,6 +28,8 @@ public class NoteController {
 
     @Autowired
     NoteService noteService;
+    @Autowired
+    UserService userService;
 
     @PostMapping("")
     public ResponseEntity<ApiResult> createNote(@RequestBody @Valid Note note,
@@ -55,5 +68,26 @@ public class NoteController {
                 true, "Note restored successfully", null
         ));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResult> searchNotes(
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String[] sort,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userService.findByUsernameOrEmail(userDetails.getUsername());
+
+        Sort sorting = Sort.by(Sort.Direction.fromString(sort[1]), sort[0]);
+        Pageable pageable = PageRequest.of(page, size, sorting);
+
+        Page<NoteDto> results = noteService.searchNotes(user, tags, searchTerm, pageable);
+        PageResponse<NoteDto> pageResponse = new PageResponse<>(results);
+
+        return ResponseEntity.ok(new ApiResult(true, "Notes retrieved successfully", pageResponse));
+    }
+
 
 }

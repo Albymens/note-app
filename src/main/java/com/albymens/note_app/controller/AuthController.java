@@ -7,6 +7,7 @@ import com.albymens.note_app.dto.SignupRequest;
 import com.albymens.note_app.model.User;
 import com.albymens.note_app.service.JwtService;
 import com.albymens.note_app.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,25 @@ public class AuthController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<Void> validateToken(HttpServletRequest request) {
+        String token = extractToken(request);
+
+        if (token != null && jwtService.validateToken(token)) {
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
     }
 
 }

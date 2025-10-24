@@ -21,4 +21,6 @@ CREATE TABLE notes (
 );
 
 CREATE INDEX idx_notes_user_id ON notes(user_id);
+CREATE INDEX idx_notes_created_at ON notes(created_at);
+CREATE INDEX idx_notes_updated_at ON notes(updated_at);
 CREATE INDEX idx_notes_deleted_at ON notes(deleted_at);

@@ -50,12 +50,11 @@ public class JwtService {
         return extractClaims(token).getSubject();
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token) {
         try {
-            String username = extractUsername(token);
             Claims claims = extractClaims(token);
             Date expiryDate = claims.getExpiration();
-            return username.equals(userDetails.getUsername()) && expiryDate.after(new Date());
+            return expiryDate.after(new Date());
         } catch (JwtException | IllegalArgumentException e){
             return false;
         }

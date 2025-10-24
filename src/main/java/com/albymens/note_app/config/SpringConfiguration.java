@@ -27,7 +27,10 @@ public class SpringConfiguration {
             "/static/**",
             "/css/**",
             "/js/**",
-            "/images/**"
+            "/images/**",
+            "/webjars/**",
+            "/favicon.ico",
+            "/", "/signup", "/login", "/notes"
     };
 
     @Bean

@@ -129,18 +129,17 @@ public class NoteService {
         );
     }
 
-    private Specification<Note> buildSearchSpecification(Long userId, List<String> tags, String searchTerm){
-        return Specification.allOf(NoteSpecification.belogToUser(userId))
+    private Specification<Note> buildSearchSpecification(User user, List<String> tags, String searchTerm){
+        return Specification.allOf(NoteSpecification.belogToUser(user))
                 .and(NoteSpecification.isNotDeleted())
                 .and(NoteSpecification.containSearchTerm(searchTerm))
                 .and(NoteSpecification.hasAnyTags(tags));
 
     }
 
-    public Page<NoteDto> searchNotes(Long userId, List<String> tags, String searchTerm, Pageable page){
-        Specification<Note> spec = buildSearchSpecification(userId, tags, searchTerm);
+    public Page<NoteDto> searchNotes(User user, List<String> tags, String searchTerm, Pageable page){
+        Specification<Note> spec = buildSearchSpecification(user, tags, searchTerm);
         Page<Note> notes = noteRepository.findAll(spec, page);
         return notes.map(this::toDto);
-
     }
 }

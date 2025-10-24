@@ -44,4 +44,9 @@ public class GlobalHandlerException {
                 new ApiResult(false, exception.getMessage(), null)
         );
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication required");
+    }
 }
