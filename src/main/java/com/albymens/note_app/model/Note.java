@@ -1,6 +1,6 @@
 package com.albymens.note_app.model;
 
-import com.albymens.note_app.utils.TagConverter;
+import com.albymens.note_app.model.converter.TagConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

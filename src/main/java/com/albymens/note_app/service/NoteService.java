@@ -1,15 +1,20 @@
 package com.albymens.note_app.service;
 
-import com.albymens.note_app.dto.NoteResponse;
+import com.albymens.note_app.dto.NoteDto;
 import com.albymens.note_app.exception.DuplicateResourceException;
 import com.albymens.note_app.exception.ResourceNotFoundException;
 import com.albymens.note_app.model.Note;
 import com.albymens.note_app.model.User;
 import com.albymens.note_app.repository.NoteRepository;
-import com.albymens.note_app.utils.TagConverter;
+import com.albymens.note_app.model.converter.TagConverter;
+import com.albymens.note_app.repository.specification.NoteSpecification;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,6 +22,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
+@Transactional
 public class NoteService {
 
     private static final Logger logger = LoggerFactory.getLogger(NoteService.class);
@@ -26,7 +32,7 @@ public class NoteService {
     @Autowired
     UserService userService;
 
-    public NoteResponse createNote(Note request, String username){
+    public NoteDto createNote(Note request, String username){
 
         User user = userService.findByUsername(username).orElseThrow(()->{
             throw new ResourceNotFoundException("User not found");
@@ -47,20 +53,20 @@ public class NoteService {
        Note savedNote = noteRepository.save(note);
        logger.info("New note {} created at {}", savedNote.getId(), savedNote.getCreatedAt());
 
-       return generateNoteResponse(savedNote);
+       return toDto(savedNote);
     }
 
-    public NoteResponse getNoteById(Long noteId){
+    public NoteDto getNoteById(Long noteId){
         Note note = noteRepository.findById(noteId).orElseThrow(
                 ()-> {
                     logger.error("Note with id: {}, not found", noteId);
                     return new ResourceNotFoundException("Note with id: {}, not found" + noteId);
                 });
-        return generateNoteResponse(note);
+        return toDto(note);
 
     }
 
-    public NoteResponse updateNote(Long id, Note note){
+    public NoteDto updateNote(Long id, Note note){
         Note existingNote = noteRepository.findById(id).orElseThrow(
                 ()-> {
                     logger.error("Note not found with id: {}", id);
@@ -81,7 +87,7 @@ public class NoteService {
         Note savedNote = noteRepository.save(existingNote);
 
         logger.info("Note with id: {} updated successfully at {}", savedNote.getId(), savedNote.getUpdatedAt());
-        return generateNoteResponse(savedNote);
+        return toDto(savedNote);
     }
 
     public void deleteNote(Long noteId){
@@ -113,13 +119,28 @@ public class NoteService {
         return noteRepository.findByDeletedAtIsNull();
     }
 
-    public NoteResponse generateNoteResponse(Note note){
-        return new NoteResponse(
+    private NoteDto toDto(Note note){
+        return new NoteDto(
                 note.getId(),
                 note.getTitle(),
                 note.getContent(),
                 note.getTags(),
                 note.getUser().getUsername()
         );
+    }
+
+    private Specification<Note> buildSearchSpecification(Long userId, List<String> tags, String searchTerm){
+        return Specification.allOf(NoteSpecification.belogToUser(userId))
+                .and(NoteSpecification.isNotDeleted())
+                .and(NoteSpecification.containSearchTerm(searchTerm))
+                .and(NoteSpecification.hasAnyTags(tags));
+
+    }
+
+    public Page<NoteDto> searchNotes(Long userId, List<String> tags, String searchTerm, Pageable page){
+        Specification<Note> spec = buildSearchSpecification(userId, tags, searchTerm);
+        Page<Note> notes = noteRepository.findAll(spec, page);
+        return notes.map(this::toDto);
+
     }
 }

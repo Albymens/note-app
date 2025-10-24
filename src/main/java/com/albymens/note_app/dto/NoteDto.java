@@ -2,14 +2,14 @@ package com.albymens.note_app.dto;
 
 import java.util.List;
 
-public class NoteResponse {
+public class NoteDto {
     private Long id;
     private String title;
     private String content;
     private List<String> tags;
     private String username;
 
-    public NoteResponse(Long id, String title, String content, List<String> tags, String username) {
+    public NoteDto(Long id, String title, String content, List<String> tags, String username) {
         this.id = id;
         this.title = title;
         this.content = content;

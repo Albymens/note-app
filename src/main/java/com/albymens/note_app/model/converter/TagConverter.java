@@ -1,4 +1,4 @@
-package com.albymens.note_app.utils;
+package com.albymens.note_app.model.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
