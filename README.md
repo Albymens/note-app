@@ -1,5 +1,4 @@
-# note-app
-Notes app with a minimal web UI.
+# Notes app with a minimal web UI
 
 A Spring Boot notes application with JWT authentication, built with Java 21 and modern web technologies.
 
