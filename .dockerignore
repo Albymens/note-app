@@ -1,0 +1,23 @@
+# Ignore Maven build output
+target/
+
+# Ignore IDE/project files
+.idea/
+*.iml
+*.class
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+# Ignore local database files
+*.mv.db
+*.trace.db
+*.db
+
+# Ignore version control
+.git/
+.gitignore
+
+# Misc
+.DS_Store
