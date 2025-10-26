@@ -186,7 +186,11 @@ Key configuration in `application.properties`:
 
 ### Docker
 Build: `docker build -t notes-app .`
-Run: `docker run -p 8080:8080 notes-app`
+Run: `docker run -p 8080:8080 \
+-e JWT_SECRET_KEY=your_generated_secret_key \
+-e JWT_EXPIRY_LENGTH=3600000 \
+note-app`
+- 🔐 Generating a JWT Secret Key: You’ll need a secure secret key for signing JWTs.
 
 ### Flyway
 Migrations live under `src/main/resources/db/migration`.

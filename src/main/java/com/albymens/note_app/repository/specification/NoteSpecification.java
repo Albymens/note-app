@@ -2,13 +2,12 @@ package com.albymens.note_app.repository.specification;
 
 import com.albymens.note_app.model.Note;
 import com.albymens.note_app.model.User;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NoteSpecification {
     public static Specification<Note> belongsToUser(User user){
@@ -25,7 +24,7 @@ public class NoteSpecification {
                 return criteriaBuilder.conjunction();
             }
 
-            String pattern = "%" + searchTerm + "%";
+            String pattern = "%" + searchTerm.toLowerCase() + "%";
             return criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), pattern),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), pattern)
@@ -39,29 +38,15 @@ public class NoteSpecification {
                 return criteriaBuilder.conjunction();
             }
 
+            Expression<String> tagsField = criteriaBuilder.lower(root.get("tags"));
+
             List<Predicate> predicates = new ArrayList<>();
+
             for (String tag : tags){
-                String normalizedTag = tag.trim().toLowerCase();
-
-                // More precise patterns for CSV
-                String[] patterns = {
-                        "%," + normalizedTag + ",%",  // tag in middle
-                        normalizedTag + ",%",         // tag at start
-                        "%," + normalizedTag,         // tag at end
-                        normalizedTag                 // only tag
-                };
-
-                List<Predicate> patternPredicates = Arrays.stream(patterns)
-                        .map(pattern -> criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("tags")),
-                                pattern
-                        ))
-                        .collect(Collectors.toList());
-
-                predicates.add(criteriaBuilder.or(
-                        patternPredicates.toArray(new Predicate[0])
-                ));
+                String normalizeTag = "%" + tag.toLowerCase() + "%";
+                predicates.add(criteriaBuilder.like(tagsField, normalizeTag));
             }
+
             return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
         };
 

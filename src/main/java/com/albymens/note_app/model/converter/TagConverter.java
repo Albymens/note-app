@@ -20,15 +20,13 @@ public class TagConverter implements AttributeConverter<List<String>, String> {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(List<String> strings) {
-
-        List<String> normalized = normalizeTags(strings);
-
+    public String convertToDatabaseColumn(List<String> tags) {
+        List<String> normalized = normalizeTags(tags);
         try {
             return mapper.writeValueAsString(normalized);
         } catch (JsonProcessingException e) {
             logger.error("Error serializing tags to JSON: {}", e.getMessage());
-            throw new IllegalArgumentException("Error serializing tags to JSON");
+            throw new IllegalArgumentException("Error serializing tags to JSON", e);
         }
     }
 
@@ -39,15 +37,17 @@ public class TagConverter implements AttributeConverter<List<String>, String> {
         }
 
         try {
+            // ✅ Handle both correct and double-encoded JSON formats
+            // Example: "\"[\"learn\"]\"" → "["learn"]"
+            if (dbData.startsWith("\"[") && dbData.endsWith("]\"")) {
+                dbData = mapper.readValue(dbData, String.class);
+            }
+
             return mapper.readValue(dbData, new TypeReference<List<String>>() {});
         } catch (IOException e) {
             logger.error("Error reading tags from JSON: {}", e.getMessage());
-            throw new IllegalArgumentException("Error reading tags from JSON");
+            throw new IllegalArgumentException("Error reading tags from JSON", e);
         }
-    }
-
-    public static String normalizeTag(String tag) {
-        return tag == null ? null : tag.trim().toLowerCase();
     }
 
     public static List<String> normalizeTags(List<String> tags) {
@@ -55,7 +55,7 @@ public class TagConverter implements AttributeConverter<List<String>, String> {
 
         return tags.stream()
                 .filter(tag -> tag != null && !tag.isBlank())
-                .map(TagConverter::normalizeTag)
+                .map(tag -> tag.trim().toLowerCase())
                 .distinct()
                 .collect(Collectors.toList());
     }

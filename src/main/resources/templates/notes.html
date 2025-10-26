@@ -228,6 +228,12 @@
         validateTokenAndLoadNotes(token);
     });
 
+     $('#noteModal').on('show.bs.modal', function () {
+        $('#saveNoteBtn').prop('disabled', false);
+        $('#saveNoteText').text('Save Note');
+        clearModalErrors();
+    });
+
     function validateTokenAndLoadNotes(token) {
         $.ajax({
             url: '/api/auth/validate',

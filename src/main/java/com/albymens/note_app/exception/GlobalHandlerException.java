@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +48,8 @@ public class GlobalHandlerException {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
     public ResponseEntity<String> handleAccessDenied() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication required");
     }
