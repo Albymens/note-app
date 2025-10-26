@@ -8,6 +8,8 @@ import com.albymens.note_app.model.User;
 import com.albymens.note_app.service.NoteService;
 import com.albymens.note_app.service.UserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
+    private static final Logger logger = LoggerFactory.getLogger(NoteController.class);
+
 
     @Autowired
     NoteService noteService;
@@ -84,9 +87,17 @@ public class NoteController {
         Pageable pageable = PageRequest.of(page, size, sorting);
 
         Page<NoteDto> results = noteService.searchNotes(user, tags, searchTerm, pageable);
+        logger.info("Results {}", results);
         PageResponse<NoteDto> pageResponse = new PageResponse<>(results);
 
         return ResponseEntity.ok(new ApiResult(true, "Notes retrieved successfully", pageResponse));
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ApiResult> getActiveNotes(){
+        return ResponseEntity.ok(new ApiResult(
+                true, "Notes retrieved successfully", noteService.findAllActiveNotes())
+        );
     }
 
 

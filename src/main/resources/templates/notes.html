@@ -269,7 +269,23 @@
             url: url,
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
             success: function(result) {
-                displayNotes(result);
+                const notesPage = result ?.content ? result : result.data;
+
+                displayNotes(notesPage);
+
+                console.log("Rendering notes:", notesPage.content);
+
+                let html = '';
+                notesPage.content.forEach(note => {
+                    html += `<div class="note">
+                        <h3>${note.title}</h3>
+                        <p>${note.content || ''}</p>
+                        <div><strong>Tags:</strong> ${note.tags.join(", ")}</div>
+                        <div><em>By ${note.username}</em></div>
+                        <small>Created at: ${new Date(note.createdAt).toLocaleString()}</small>
+                    </div>`;
+            });
+                $("#notes-container").html(html);
             },
             error: function(xhr) {
                 if (!handleAuthError(xhr)) {

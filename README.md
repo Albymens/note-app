@@ -174,5 +174,22 @@ Key configuration in `application.properties`:
     - Clear browser localStorage
     - Restart application to regenerate tokens
 
+### Run locally
+1. Build: `mvn -DskipTests package`
+2. Run: `java -jar target/notes-app-0.0.1-SNAPSHOT.jar`
+3. Open `http://localhost:8080/`
+
+### Decisions
+- H2 file used for simplicity; switching to Postgres is straightforward (change `spring.datasource`).
+- Tags stored as comma-separated string in DB for simplicity; normalized and exposed as Set in API.
+- JWT used; passwords stored with BCrypt.
+
+### Docker
+Build: `docker build -t notes-app .`
+Run: `docker run -p 8080:8080 notes-app`
+
+### Flyway
+Migrations live under `src/main/resources/db/migration`.
+
 
 

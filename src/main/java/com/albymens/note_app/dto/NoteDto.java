@@ -1,5 +1,6 @@
 package com.albymens.note_app.dto;
 
+import java.time.Instant;
 import java.util.List;
 
 public class NoteDto {
@@ -8,13 +9,33 @@ public class NoteDto {
     private String content;
     private List<String> tags;
     private String username;
+    private Instant createdAt;
+    private Instant updatedAt;
 
-    public NoteDto(Long id, String title, String content, List<String> tags, String username) {
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public NoteDto(Long id, String title, String content, List<String> tags, String username, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.tags = tags;
         this.username = username;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Long getId() {

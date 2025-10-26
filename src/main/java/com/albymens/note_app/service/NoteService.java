@@ -21,6 +21,8 @@ import org.springframework.util.StringUtils;
 import java.time.Instant;
 import java.util.List;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 @Service
 @Transactional
 public class NoteService {
@@ -115,8 +117,9 @@ public class NoteService {
         }
     }
 
-    public List<Note> findAllActiveNotes(){
-        return noteRepository.findByDeletedAtIsNull();
+    public List<NoteDto> findAllActiveNotes(){
+        List<Note> notes = noteRepository.findAll();
+        return notes.stream().map(this::toDto).toList();
     }
 
     private NoteDto toDto(Note note){
@@ -125,21 +128,31 @@ public class NoteService {
                 note.getTitle(),
                 note.getContent(),
                 note.getTags(),
-                note.getUser().getUsername()
+                note.getUser().getUsername(),
+                note.getCreatedAt(),
+                note.getUpdatedAt()
         );
     }
 
     private Specification<Note> buildSearchSpecification(User user, List<String> tags, String searchTerm){
-        return Specification.allOf(NoteSpecification.belogToUser(user))
-                .and(NoteSpecification.isNotDeleted())
-                .and(NoteSpecification.containSearchTerm(searchTerm))
-                .and(NoteSpecification.hasAnyTags(tags));
+        Specification<Note> spec = NoteSpecification.isNotDeleted();
+
+       if(null != user) spec = spec.and(NoteSpecification.belongsToUser(user));
+       if(null != tags && !tags.isEmpty()) spec = spec.and(NoteSpecification.hasAnyTags(tags));
+       if(null != searchTerm) spec = spec.and(NoteSpecification.containSearchTerm(searchTerm));
+
+       return spec;
 
     }
 
     public Page<NoteDto> searchNotes(User user, List<String> tags, String searchTerm, Pageable page){
+        logger.info("Searching notes for user: {}", user != null ? user.getUsername() : "null");
+
         Specification<Note> spec = buildSearchSpecification(user, tags, searchTerm);
         Page<Note> notes = noteRepository.findAll(spec, page);
+
+        logger.info("Found {} notes out of {} total", notes.getNumberOfElements(), notes.getTotalElements());
+
         return notes.map(this::toDto);
     }
 }
