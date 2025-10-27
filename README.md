@@ -40,12 +40,22 @@ A Spring Boot notes application with JWT authentication, built with Java 21 and 
 git clone https://github.com/Albymens/note-app.git
 ```
 
-### 2. Build the Application
+### 2. Set Environment Variables
+```bash
+export JWT_SECRET_KEY=your_generated_secret_key
+export JWT_EXPIRY_LENGTH=86400000
+
+# Optional: Verify variables are set
+echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
+echo "JWT_EXPIRY_LENGTH: $JWT_EXPIRY_LENGTH"
+```
+
+### 3. Build the Application
 ```bash
 mvn clean compile
 ```
 
-### 3. Run the Application
+### 4. Run the Application
 ```bash
 mvn spring-boot:run
 ```
@@ -186,12 +196,17 @@ Key configuration in `application.properties`:
 
 ### Docker
 - 🔐 Generating a JWT Secret Key: You’ll need a secret key for signing JWTs (Generate online).
-- Build: `docker build -t notes-app .`
+- Build: 
+```bash 
+docker build -t notes-app .
+```
 - Run:
-    `docker run -p 8080:8080 \
+```bash
+    docker run -p 8080:8080 \
     -e JWT_SECRET_KEY=your_generated_secret_key \
     -e JWT_EXPIRY_LENGTH=3600000 \
-    note-app`
+    note-app
+```
 
 ### Flyway
 Migrations live under `src/main/resources/db/migration`.
