@@ -21,8 +21,6 @@ import org.springframework.util.StringUtils;
 import java.time.Instant;
 import java.util.List;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 @Service
 @Transactional
 public class NoteService {
@@ -46,7 +44,7 @@ public class NoteService {
            throw new DuplicateResourceException("Note already exists with id: " + request.getId());
        }
 
-        Note note = new Note();
+       Note note = new Note();
        note.setUser(user);
        note.setTags(TagConverter.normalizeTags(request.getTags()));
        note.setContent(request.getContent());
