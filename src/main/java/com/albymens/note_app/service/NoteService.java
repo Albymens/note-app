@@ -32,7 +32,7 @@ public class NoteService {
     @Autowired
     UserService userService;
 
-    public NoteDto createNote(Note request, String username){
+public NoteDto createNote(Note request, String username){
 
         User user = userService.findByUsername(username).orElseThrow(()->{
             throw new ResourceNotFoundException("User not found");
