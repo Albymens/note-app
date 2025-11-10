@@ -30,6 +30,9 @@ public class SpringConfiguration {
             "/images/**",
             "/webjars/**",
             "/favicon.ico",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
             "/", "/signup", "/login", "/notes"
     };
 

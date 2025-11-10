@@ -64,6 +64,7 @@ The application will start on `http://localhost:8080`
 
 ### 4. Access the Application
 - **Main Application**: http://localhost:8080
+- **Swagger Documentation (Local)**: 👉 http://localhost:8080/swagger-ui.html
 - **H2 Database Console**: http://localhost:8080/h2-console
     - JDBC URL: `jdbc:h2:file:./data/notesdb`
     - Username: `sa`
@@ -188,6 +189,7 @@ Key configuration in `application.properties`:
 1. Build: `mvn -DskipTests package`
 2. Run: `java -jar target/notes-app-0.0.1-SNAPSHOT.jar`
 3. Open `http://localhost:8080/`
+4. Swagger Documentation: `http://localhost:8080/swagger-ui.html/`
 
 ### Decisions
 - H2 file used for simplicity; switching to Postgres is straightforward (change `spring.datasource`).
@@ -210,6 +212,12 @@ docker build -t notes-app .
 
 ### Flyway
 Migrations live under `src/main/resources/db/migration`.
+
+## Live Demo
+⚠️ Note: The application is hosted on Render and may take 2–3 minutes to load initially due to cold starts. If it does not appear after 3 minutes, please refresh the page.
+- **Live API (Deployed on Render)**: [🌍 Swagger UI - Live](https://note-app-uzp9.onrender.com/swagger-ui/index.html)
+- **Live UI(Deployed on Render)**: [🌐 UI Demo (/signup)](https://note-app-uzp9.onrender.com/signup)
+
 
 
 

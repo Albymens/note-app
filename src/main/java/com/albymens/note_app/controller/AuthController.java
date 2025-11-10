@@ -7,6 +7,8 @@ import com.albymens.note_app.dto.SignupRequest;
 import com.albymens.note_app.model.User;
 import com.albymens.note_app.service.JwtService;
 import com.albymens.note_app.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -22,6 +24,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(
+        name = "Authentication",
+        description = "Endpoints for user authentication and authorization. Includes user registration (sign-up), login to obtain a JWT token, token validation, and retrieval of the currently authenticated user."
+)
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -33,6 +39,10 @@ public class AuthController {
     AuthenticationManager authenticationManager;
 
 
+    @Operation(
+            summary = "Register a ner User (Sign Up)",
+            description = "Creates a new user account with username, email and password. Returns a success message after a successful registration"
+    )
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@Valid  @RequestBody SignupRequest userRequest){
         try {
@@ -55,6 +65,11 @@ public class AuthController {
         }
     }
 
+    @Operation(
+            summary = "Login and obtain JWT token",
+            description = "Authenticates a user with valid credentials (username or email and password) and returns a JWT access token used for subsequent API requests."
+
+    )
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid  @RequestBody LoginRequest request) {
         try {
@@ -86,6 +101,10 @@ public class AuthController {
         }
     }
 
+    @Operation(
+            summary = "Get current authenticated user",
+            description = "Retrieves information about the currently logged-in user based on the JWT token provided in the Authorization header."
+    )
     @GetMapping("/me")
     public ResponseEntity<ApiResult> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -105,6 +124,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @Operation(
+            summary = "Validate JWT token",
+            description = "Validates a provided JWT token to ensure it is still valid and not expired. Returns token validity status."
+    )
     @GetMapping("/validate")
     public ResponseEntity<Void> validateToken(HttpServletRequest request) {
         String token = extractToken(request);
