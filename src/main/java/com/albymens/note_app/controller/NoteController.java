@@ -162,9 +162,9 @@ public class NoteController {
             }
     )
     @GetMapping("")
-    public ResponseEntity<ApiResult> getActiveNotes(){
+    public ResponseEntity<ApiResult> getActiveNotes( @AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok(new ApiResult(
-                true, "Notes retrieved successfully", noteService.findAllActiveNotes())
+                true, "Notes retrieved successfully", noteService.findAllActiveNotes(userDetails.getUsername()))
         );
     }
 

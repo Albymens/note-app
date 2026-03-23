@@ -115,7 +115,8 @@ public NoteDto createNote(Note request, String username){
         }
     }
 
-    public List<NoteDto> findAllActiveNotes(){
+    public List<NoteDto> findAllActiveNotes(String username){
+        userService.findByUsername(username).orElseThrow( () -> new ResourceNotFoundException("User not found"));
         List<Note> notes = noteRepository.findAll();
         return notes.stream().map(this::toDto).toList();
     }
